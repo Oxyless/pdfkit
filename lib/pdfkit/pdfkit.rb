@@ -61,17 +61,23 @@ class PDFKit
 
     invoke = command(path)
     result = nil
-    
+  
     5.times do
-      result = IO.popen(invoke, "wb+") do |pdf|
-        pdf.puts(@source.to_s) if @source.html?
-        pdf.close_write
-        pdf.gets(nil) if path.nil?
-      end
+      begin
+        Timeout.timeout(10) do
+          result = IO.popen(invoke, "wb+") do |pdf|
+            pdf.puts(@source.to_s) if @source.html?
+            pdf.close_write
+            pdf.gets(nil) if path.nil?
+          end
+        end
       
-      break if not (empty_result?(path, result) or !successful?($?))
+        break if not (empty_result?(path, result) or !successful?($?))
+      rescue
+        next
+      end
     end
-    
+  
     raise "command failed: #{invoke}" if 
 
     # $? is thread safe per
