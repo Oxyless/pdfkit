@@ -20,12 +20,12 @@ class PDFKit
       if rendering_pdf? && headers['Content-Type'] =~ /text\/html|application\/xhtml\+xml/
         body = response.respond_to?(:body) ? response.body : response.join
         body = body.join if body.is_a?(Array)
-        body = PDFKit.new(translate_paths(body, env), @options)
+        pdf = PDFKit.new(translate_paths(body, env), @options)
 
         6.times do |n|
           begin
             Timeout.timeout(10) do
-              body = Thread.new{  body.to_pdf }.value
+              body = Thread.new{  pdf.to_pdf }.value
             end
           rescue Exception => e
             raise "wkhtmltopdf crashed" if n == 2
