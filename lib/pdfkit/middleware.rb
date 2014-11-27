@@ -27,8 +27,8 @@ class PDFKit
             Timeout.timeout(10) do
               body = body.to_pdf
             end
-          rescue
-            raise "wkhtmltopdf crashed" if n == 2
+          rescue Exception => e
+            raise "wkhtmltopdf crashed: #{e.message}" if n == 2
             next
           end
           
