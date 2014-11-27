@@ -22,12 +22,13 @@ class PDFKit
         body = body.join if body.is_a?(Array)
         body = PDFKit.new(translate_paths(body, env), @options)
 
-        3.times do
+        3.times do |n|
           begin
-            Timeout.timeout(5) do
+            Timeout.timeout(10) do
               body = body.to_pdf
             end
           rescue
+            raise "wkhtmltopdf crashed" if n == 2
             next
           end
           
