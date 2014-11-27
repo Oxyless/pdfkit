@@ -1,5 +1,3 @@
-require 'system_timer'
-
 class PDFKit
 
   class Middleware
@@ -26,7 +24,7 @@ class PDFKit
 
         3.times do |n|
           begin
-            SystemTimer.timeout_after(5) do
+            Timeout.timeout(10) do
               body = body.to_pdf
             end
           rescue Exception => e
