@@ -60,11 +60,16 @@ class PDFKit
     append_stylesheets
 
     invoke = command(path)
-
-    result = IO.popen(invoke, "wb+") do |pdf|
-      pdf.puts(@source.to_s) if @source.html?
-      pdf.close_write
-      pdf.gets(nil) if path.nil?
+    result = nil
+    
+    5.times do
+      result = IO.popen(invoke, "wb+") do |pdf|
+        pdf.puts(@source.to_s) if @source.html?
+        pdf.close_write
+        pdf.gets(nil) if path.nil?
+      end
+      
+      break if not (empty_result?(path, result) or !successful?($?))
     end
     
     raise "command failed: #{invoke}" if 
