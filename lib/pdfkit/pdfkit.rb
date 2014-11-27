@@ -58,27 +58,16 @@ class PDFKit
 
   def to_pdf(path=nil)
     append_stylesheets
-
+    
     invoke = command(path)
-    result = nil
   
-    5.times do
-      begin
-        Timeout.timeout(5) do
-          result = IO.popen(invoke, "wb+") do |pdf|
-            pdf.puts(@source.to_s) if @source.html?
-            pdf.close_write
-            pdf.gets(nil) if path.nil?
-            
-            return result if not (empty_result?(path, result) or !successful?($?))
-          end
-        end
-      rescue
-        next
-      end
+    result = IO.popen(invoke, "wb+") do |pdf|
+      pdf.puts(@source.to_s) if @source.html?
+      pdf.close_write
+      pdf.gets(nil) if path.nil?
     end
   
-    raise "command failed: #{invoke}" if 
+    raise "command failed: #{invoke}" 
 
     # $? is thread safe per
     # http://stackoverflow.com/questions/2164887/thread-safe-external-process-in-ruby-plus-checking-exitstatus
