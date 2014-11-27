@@ -64,15 +64,15 @@ class PDFKit
   
     5.times do
       begin
-        Timeout.timeout(10) do
+        Timeout.timeout(5) do
           result = IO.popen(invoke, "wb+") do |pdf|
             pdf.puts(@source.to_s) if @source.html?
             pdf.close_write
             pdf.gets(nil) if path.nil?
+            
+            return result if not (empty_result?(path, result) or !successful?($?))
           end
         end
-      
-        break if not (empty_result?(path, result) or !successful?($?))
       rescue
         next
       end
